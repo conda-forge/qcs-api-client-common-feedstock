@@ -46,7 +46,9 @@ outputs:
         - {{ stdlib('c') }}
         - {{ compiler('c') }}
       host:
+        - pip
         - python
+        - setuptools
       run:
         - grpcio >=1.63.0
         - grpc-interceptor >=0.15.0
