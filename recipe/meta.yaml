@@ -10,7 +10,7 @@ source:
   sha256: ee84c504bd5843ad8f129b50594ab9afaaa8bfa32d8f43a016b4ecc5bce1ae37
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
@@ -19,6 +19,9 @@ requirements:
     - {{ compiler('rust') }}
     - {{ stdlib('c') }}
     - cargo-bundle-licenses
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - maturin >=1.0.0,<2.0.0  # [build_platform != target_platform]
+    - python  # [build_platform != target_platform]
   host:
     - maturin >=1.0.0,<2.0.0
     - python
@@ -41,10 +44,15 @@ outputs:
   - name: qcs-api-client-common
     script: install.sh  # [unix]
     script: install.bat  # [win]
+    build:
+      ignore_run_exports:
+        - python
     requirements:
       build:
         - {{ stdlib('c') }}
         - {{ compiler('c') }}
+        - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+        - python  # [build_platform != target_platform]
       host:
         - pip
         - python
