@@ -1,5 +1,5 @@
 {% set name = "qcs-api-client-common" %}
-{% set version = "0.11.9" %}
+{% set version = "0.13.0-jselig-cli-v2.0" %}
 
 package:
   name: qcs-api-client-common-split
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/rigetti/qcs-api-client-rust/archive/refs/tags/common/v{{ version }}.tar.gz
-  sha256: bef5cc4a0cff4a5d06812856678649e36e3ecd276c1eb356620800df60622669
+  sha256: 584d641139f0b0912f7ecb5c646b007b9465f9a015ece5bd782af18ea70a0f20
 
 build:
   number: 0
