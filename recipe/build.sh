@@ -3,7 +3,13 @@
 set -exuo pipefail
 
 export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
-export OPENSSL_DIR=${PREFIX}/lib
+
+if [[ "${target_platform}" != "${build_platform:-${target_platform}}" ]]; then
+  export PKG_CONFIG_PATH=""
+  export PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
+  export PKG_CONFIG_SYSROOT_DIR="${PREFIX}"
+  export PKG_CONFIG="${BUILD_PREFIX}/bin/pkg-config"
+fi
 
 # Build
 maturin build --release --manifest-path "${SRC_DIR}"/qcs-api-client-common/Cargo.toml --out "${SRC_DIR}"/wheels
