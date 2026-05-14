@@ -26,6 +26,7 @@ requirements:
     - python  # [build_platform != target_platform]
   host:
     - maturin >=1.0.0,<2.0.0
+    - openssl
     - python
 
 outputs:
