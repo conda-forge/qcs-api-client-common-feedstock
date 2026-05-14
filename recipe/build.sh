@@ -9,6 +9,8 @@ if [[ "${target_platform}" != "${build_platform:-${target_platform}}" ]]; then
   export PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
   export PKG_CONFIG_SYSROOT_DIR="${PREFIX}"
   export PKG_CONFIG="${BUILD_PREFIX}/bin/pkg-config"
+
+  export OPENSSL_DIR="${PREFIX}"
 fi
 
 # Build
