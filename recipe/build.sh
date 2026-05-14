@@ -2,7 +2,7 @@
 
 set -exuo pipefail
 
-export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
+# This is incompatible with rigetti::PyO3: export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
 
 if [[ "${target_platform}" != "${build_platform:-${target_platform}}" ]]; then
   export PKG_CONFIG_PATH=""
