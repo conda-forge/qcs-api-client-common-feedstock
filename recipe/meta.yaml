@@ -98,5 +98,6 @@ about:
 
 extra:
   recipe-maintainers:
+    - BastianZim
     - MementoRC
   feedstock-name: qcs-api-client-common
