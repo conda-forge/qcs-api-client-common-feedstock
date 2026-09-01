@@ -1,5 +1,5 @@
 {% set name = "qcs-api-client-common" %}
-{% set version = "0.18.7" %}
+{% set version = "0.19.2" %}
 
 package:
   name: qcs-api-client-common-split
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/rigetti/qcs-api-client-rust/archive/refs/tags/common/v{{ version }}.tar.gz
-  sha256: 868caac449eeeaed60e3ef78db7304d9407dbc7301aa9ea32a1769fff3057f8b
+  sha256: e8503e62d5f2b05915290ea4802c564e13799279e925dd859b9485e2d1737e67
 
 build:
   number: 0
