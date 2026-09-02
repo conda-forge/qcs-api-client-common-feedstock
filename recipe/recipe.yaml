@@ -43,6 +43,7 @@ outputs:
         - maturin >=1.9.4,<2.0.0
         - openssl
         - python
+        - zlib
 
   - package:
       name: qcs_api_client_common
@@ -94,6 +95,7 @@ outputs:
         - pip
         - python
         - setuptools
+        - zlib
       run:
         - grpcio >=1.63.0
         - grpc-interceptor >=0.15.0
