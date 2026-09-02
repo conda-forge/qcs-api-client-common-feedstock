@@ -12,7 +12,6 @@ Summary: Rust clients for Rigetti APIs
 Provides structures common to the gRPC and OpenAPI clients. In particular, it provides
 a ClientConfiguration type which is used to configure the clients using local QCS settings.
 
-
 Current build status
 ====================
 
