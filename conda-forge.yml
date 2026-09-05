@@ -1,6 +1,7 @@
 bot:
   version_updates:
     allowed_tag_globs: 'common/v*'
+  automerge: true
 build_platform:
   osx_64: osx_arm64
 conda_build:
