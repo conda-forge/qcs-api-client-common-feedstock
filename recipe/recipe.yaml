@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: qcs-api-client-common
-  version: "0.23.0"
+  version: "0.24.0"
 
 recipe:
   name: qcs-api-client-common-split
@@ -10,7 +10,7 @@ recipe:
 
 source:
   url: https://github.com/rigetti/qcs-api-client-rust/archive/refs/tags/common/v${{ version }}.tar.gz
-  sha256: 69c08a8b27b387f0616aec6ac4b86b30be962b341c144c5473770a071ce46006
+  sha256: 76a46056085e0d057cf62e2c7f2dc7b2500f87e87131f3fe39aa0bd9f93a51f2
 
 build:
   number: 0
