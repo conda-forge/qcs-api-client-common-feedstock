@@ -22,6 +22,14 @@ outputs:
       script:
         interpreter: bash
         content: |
+          # aws-lc-sys (pulled in since 0.26.1) builds jitterentropy with -O0 and #errors
+          # out when optimized; the -O level from the conda-forge CFLAGS is appended after it.
+          # The cc crate prefers the target-specific CFLAGS_<target>, so strip those too.
+          if [[ "${target_platform}" != win-* ]]; then
+            for v in CFLAGS CXXFLAGS $(compgen -e | grep -E '^(CFLAGS|CXXFLAGS)_'); do
+              export "$v=${!v//-O[0-9sgz]/}"
+            done
+          fi
           maturin build --release --manifest-path "${SRC_DIR}"/qcs-api-client-common/Cargo.toml --out "${SRC_DIR}"/wheels
           cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
     requirements:
