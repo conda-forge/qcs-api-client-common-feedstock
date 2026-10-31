@@ -13,7 +13,7 @@ source:
   sha256: f3e06e5b130e0f0d88a4944a899d642a3440b75e0aeadc01a79d84af1751a81c
 
 build:
-  number: 0
+  number: 1
 
 outputs:
   - staging:
@@ -63,10 +63,24 @@ outputs:
         by_name:
           - python
     tests:
-      - python:
-          imports:
-            - qcs_api_client_common
-          pip_check: true
+      - if: build_platform == target_platform or osx
+        then:
+          - python:
+              imports:
+                - qcs_api_client_common
+              pip_check: true
+      # cross-built linux targets run the target python under qemu-execve
+      - if: linux and build_platform != target_platform
+        then:
+          - script:
+              - ${QEMU_EXECVE} ${PREFIX}/bin/python -c "import qcs_api_client_common"
+              - ${QEMU_EXECVE} ${PREFIX}/bin/python -m pip check
+            requirements:
+              build:
+                - qemu-execve-${{ target_platform | replace("linux-64", "x86_64") | replace("linux-", "") }} >=11
+                - sysroot_${{ target_platform }}
+              run:
+                - pip
 
   - package:
       name: qcs-api-client-common
@@ -110,48 +124,71 @@ outputs:
         by_name:
           - python
     tests:
-      - python:
-          imports:
-            - qcs_api_client_common
-          pip_check: true
-      - files:
-          source:
-            - qcs-api-client-common/tests
-            - qcs-api-client-common/tests_py
-        requirements:
-          run:
-            - pip
-            - protobuf
-            - pytest >=8.1.1
-            - pytest-asyncio >=0.23.6
-            - pytest-mock >=3.14.0
-            - python
-            - syrupy >=4.0.0
-            - if: not unix
-              then: m2-bash
-        script:
-          interpreter: bash
-          env:
-            # `test_sync_method_from_async_context` and `test_refresh_interceptor` call
-            # `ClientConfiguration.load_default()` without one of the `monkeypatch` fixtures,
-            # so they fall back to `~/.qcs/settings.toml`, which does not exist on the build
-            # workers. Point them at the fixtures shipped in the tarball instead; the tests
-            # that need a different configuration set these variables themselves.
-            QCS_SETTINGS_FILE_PATH: "tests_py/fixtures/settings.toml"
-            QCS_SECRETS_FILE_PATH: "tests_py/fixtures/secrets.toml"
-          content:
-            - cd qcs-api-client-common
-            - if: unix
-              then:
-                - pytest -v
-            - if: win
-              then:
-                # `test_default` and `test_load_profile` compare against syrupy snapshots that
-                # embed the fixture paths with forward slashes, while `fixture_env` builds them
-                # with `pathlib`, so on Windows they compare `tests_py\fixtures\settings.toml`
-                # against `tests_py/fixtures/settings.toml` and can never match. Upstream test
-                # bug rather than a packaging problem; the other 17 tests do run on Windows.
-                - pytest -v --deselect tests_py/test_configuration.py::TestClientConfiguration::test_default --deselect tests_py/test_configuration.py::TestClientConfiguration::test_load_profile
+      - if: build_platform == target_platform or osx
+        then:
+          - python:
+              imports:
+                - qcs_api_client_common
+              pip_check: true
+      - if: linux and build_platform != target_platform
+        then:
+          - script:
+              - ${QEMU_EXECVE} ${PREFIX}/bin/python -c "import qcs_api_client_common"
+              - ${QEMU_EXECVE} ${PREFIX}/bin/python -m pip check
+            requirements:
+              build:
+                - qemu-execve-${{ target_platform | replace("linux-64", "x86_64") | replace("linux-", "") }} >=11
+                - sysroot_${{ target_platform }}
+              run:
+                - pip
+      - if: not (win and build_platform != target_platform)
+        then:
+          - files:
+              source:
+                - qcs-api-client-common/tests
+                - qcs-api-client-common/tests_py
+            requirements:
+              build:
+                - if: linux and build_platform != target_platform
+                  then:
+                    - qemu-execve-${{ target_platform | replace("linux-64", "x86_64") | replace("linux-", "") }} >=11
+                    - sysroot_${{ target_platform }}
+              run:
+                - pip
+                - protobuf
+                - pytest >=8.1.1
+                - pytest-asyncio >=0.23.6
+                - pytest-mock >=3.14.0
+                - python
+                - syrupy >=4.0.0
+                - if: not unix
+                  then: m2-bash
+            script:
+              interpreter: bash
+              env:
+                # `test_sync_method_from_async_context` and `test_refresh_interceptor` call
+                # `ClientConfiguration.load_default()` without one of the `monkeypatch` fixtures,
+                # so they fall back to `~/.qcs/settings.toml`, which does not exist on the build
+                # workers. Point them at the fixtures shipped in the tarball instead; the tests
+                # that need a different configuration set these variables themselves.
+                QCS_SETTINGS_FILE_PATH: "tests_py/fixtures/settings.toml"
+                QCS_SECRETS_FILE_PATH: "tests_py/fixtures/secrets.toml"
+              content:
+                - cd qcs-api-client-common
+                - if: linux and build_platform != target_platform
+                  then:
+                    - ${QEMU_EXECVE} ${PREFIX}/bin/python -m pytest -v
+                - if: unix and not (linux and build_platform != target_platform)
+                  then:
+                    - pytest -v
+                - if: win
+                  then:
+                    # `test_default` and `test_load_profile` compare against syrupy snapshots that
+                    # embed the fixture paths with forward slashes, while `fixture_env` builds them
+                    # with `pathlib`, so on Windows they compare `tests_py\fixtures\settings.toml`
+                    # against `tests_py/fixtures/settings.toml` and can never match. Upstream test
+                    # bug rather than a packaging problem; the other 17 tests do run on Windows.
+                    - pytest -v --deselect tests_py/test_configuration.py::TestClientConfiguration::test_default --deselect tests_py/test_configuration.py::TestClientConfiguration::test_load_profile
 
 about:
   homepage: https://github.com/rigetti/qcs-api-client-rust
