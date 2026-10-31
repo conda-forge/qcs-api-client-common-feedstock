@@ -38,7 +38,7 @@ outputs:
         - ${{ compiler('cxx') }}
         - ${{ compiler('rust') }}
         - ${{ stdlib('c') }}
-        - if: not unix
+        - if: build_platform == "win-64"
           then: m2-bash
         - cargo-bundle-licenses
         - pkg-config
@@ -105,7 +105,7 @@ outputs:
       build:
         - ${{ stdlib('c') }}
         - ${{ compiler('c') }}
-        - if: not unix
+        - if: build_platform == "win-64"
           then: m2-bash
         - if: build_platform != target_platform
           then:
